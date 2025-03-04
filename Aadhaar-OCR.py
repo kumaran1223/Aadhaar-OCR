@@ -10,6 +10,7 @@ import re
 app = FastAPI()
 
 class AadhaarData(BaseModel):
+    aadhaar_number: str = ""
     name: str = ""
     guardian_name: str = ""
     dob: str = ""
@@ -41,10 +42,16 @@ def parse_aadhaar_details(text: str) -> AadhaarData:
     data = AadhaarData()
     lines = [line.strip() for line in text.split("\n") if line.strip()]
 
-    # Extract Guardian Name (S/o, C/o, D/o)
-    guardian_match = re.search(r'(S/o|C/o|D/o)\.?\s*([A-Za-z\s]+)', text, re.IGNORECASE)
+    # Extract Aadhaar Number
+    aadhaar_match = re.search(r'\b(\d{4}\s\d{4}\s\d{4})\b', text)
+    if aadhaar_match:
+        data.aadhaar_number = aadhaar_match.group(1)
+
+    # Extract Guardian Name (S/o, C/o, D/o) and remove from address
+    guardian_match = re.search(r'(S/o|C/o|D/o)[.:]?\s*([A-Za-z\s]+)', text, re.IGNORECASE)
     if guardian_match:
         data.guardian_name = guardian_match.group(2).strip()
+        text = text.replace(guardian_match.group(0), '')  # Remove guardian from text
 
     # Extract Name (first meaningful name-like line after guardian name)
     for line in lines:
@@ -62,10 +69,17 @@ def parse_aadhaar_details(text: str) -> AadhaarData:
     if gender_match:
         data.gender = gender_match.group(1).capitalize()
 
-    # Extract Address Components (excluding PO, District, State, Pincode)
+    # Extract Address (excluding Guardian Name, PO, District, State, Pincode, Aadhaar Number)
     address_match = re.search(r'(?i)address[:\s]*(.*?)(?=\nVTC|\nPO|\nSub District|\nDistrict|\nState|\n\d{6}|\nVID|\nDigitally|$)', text, re.DOTALL)
     if address_match:
-        data.address = address_match.group(1).strip()
+        address_text = address_match.group(1).strip()
+        address_text = re.sub(r'(S/o|C/o|D/o)[.:]?\s*[A-Za-z\s]+', '', address_text, flags=re.IGNORECASE)  # Remove guardian name
+        address_text = re.sub(r'\b\d{4}\s\d{4}\s\d{4}\b', '', address_text)  # Remove Aadhaar Number
+        address_text = re.sub(r'\b(VTC|PO|Sub District|District|State|\d{6})[:\s]*.*', '', address_text, flags=re.IGNORECASE)  # Remove other fields
+        address_text = re.sub(r'(?i)\b(dist|state)\b.*', '', address_text)  # Remove "DIST" and "STATE" words
+        address_text = re.sub(r'\n+', ' ', address_text).strip()  # Remove newlines
+        address_text = re.sub(r'\s+', ' ', address_text).strip()  # Normalize spaces
+        data.address = address_text
     
     vtc_match = re.search(r'VTC[:\s]*(.*)', text, re.IGNORECASE)
     if vtc_match:
