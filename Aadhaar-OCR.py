@@ -115,15 +115,21 @@ def parse_aadhaar_details(text: str) -> AadhaarData:
 async def extract_aadhaar(file: UploadFile = File(...), password: str = Form(None)):
     contents = await file.read()
     text = ""
-    
+
     if file.filename.endswith(".pdf"):
         text = extract_text_from_pdf(contents, password)
     else:
         image = Image.open(io.BytesIO(contents))
         text = extract_text_from_image(image)
-    
+
     aadhaar_data = parse_aadhaar_details(text)
+
+    #  Print Aadhaar details in the terminal (Fixed)
+    print("\n Extracted Aadhaar Details:")
+    print(aadhaar_data.model_dump_json(indent=4))  
+
     return aadhaar_data
+
 
 import uvicorn
 
