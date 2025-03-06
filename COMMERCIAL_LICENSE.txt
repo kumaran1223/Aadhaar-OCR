@@ -1,0 +1,7 @@
+Aadhaar OCR - Commercial License
+
+This software is free for non-commercial use under the MIT License.
+For commercial use, a separate license must be obtained from [KUMARAN].
+Contact [kumaran311221@gmail.com] for details.
+
+©2025 kumaran
