@@ -76,11 +76,6 @@ You can test the API using **Postman** or **cURL**.
 ## License
 This project is licensed under the **Apache License 2.0**. See [LICENSE](LICENSE) file for details.
 
-## Contribution
-Contributions are welcome! Follow standard GitHub practices:
-- Fork the repo
-- Create a feature branch
-- Submit a pull request
 
 ## Author
 Developed by kumaran
