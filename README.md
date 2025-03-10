@@ -4,6 +4,8 @@
 This project provides a **FastAPI-based Aadhaar OCR Extraction API** that allows users to upload Aadhaar card images or PDFs (including password-protected PDFs) to extract structured details. The extracted information includes:
 
 - Aadhaar Number
+- VID
+- Name Tamil
 - Name
 - Guardian Name (S/o, C/o, D/o, W/o)
 - Date of Birth (DOB)
@@ -88,6 +90,8 @@ curl -X 'POST' \
 ```json
 {
   "aadhaar_number": "1234 5678 9012",
+  "VID": " 1204 0122 5278 4248 ",
+  "name_tamil": "ஜான் டோ"
   "name": "John Doe",
   "guardian_name": "Richard Doe",
   "dob": "01/01/1980",
