@@ -120,15 +120,18 @@ def parse_aadhaar_details(text: str) -> AadhaarData:
         address_text = re.sub(r'\n+', ' ', address_text).strip()
         address_text = re.sub(r'\s+', ' ', address_text).strip()
         data.address = address_text
-    
+
+    # Extract VTC (Village/Town/City)
     vtc_match = re.search(r'VTC[:\s]*(.*)', text, re.IGNORECASE)
     if vtc_match:
         data.vtc = vtc_match.group(1).strip()
     
+    # Extract PO (Post Office)
     po_match = re.search(r'PO[:\s]*(.*)', text, re.IGNORECASE)
     if po_match:
         data.po = po_match.group(1).strip()
     
+    # Extract Sub District
     sub_district_match = re.search(r'Sub District[:\s]*(.*)', text, re.IGNORECASE)
     if sub_district_match:
         data.sub_district = sub_district_match.group(1).strip()
